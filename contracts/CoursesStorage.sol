@@ -1,10 +1,17 @@
 // SPDX-License-Identifier: SEE LICENSE IN LICENSE
 pragma solidity 0.8.20;
 
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import "@openzeppelin/contracts/utils/structs/EnumerableMap.sol";
+
 contract CoursesStorage {
     constructor() payable {
     }
-    
+
+    using EnumerableSet for EnumerableSet.UintSet;
+    using EnumerableSet for EnumerableSet.AddressSet;
+
     // receiver function 
     uint public receivedEther;
     receive() external payable {
@@ -25,17 +32,23 @@ contract CoursesStorage {
         uint id;
         string name;
         string description;
-        uint[] cardIds;
         address author;
     }
 
     // Danh sách các khóa học
     uint public courseCount = 0;
-    mapping(uint => Course) public courses;
+    mapping(uint => Course) private courses;
+    EnumerableSet.UintSet private listCourseIds;
+    // Danh sách card
     uint public cardCount = 0;
-    mapping (uint => Card) public cards;
-    mapping (address => uint[]) coursesByAuthor;
-    mapping (uint => uint[]) cardsInCourse;
+    mapping (uint => Card) private cards;
+    EnumerableSet.UintSet private listCardIds;
+    
+    // author to courses
+    mapping (address => EnumerableSet.UintSet) coursesByAuthor;
+
+    // course to cards
+    mapping (uint => EnumerableSet.UintSet) cardsInCourse;
 
     // Yêu cầu người dùng phải là tác giá của khóa học
     error NotCourseAuthor(uint courseId);
@@ -51,26 +64,26 @@ contract CoursesStorage {
 
     // Xem danh sách toàn bộ khóa học
     function getCourses() public view returns (Course[] memory) {
-        Course[] memory _courses = new Course[](courseCount);
-        for (uint i = 0; i < courseCount; i++) {
-            _courses[i] = courses[i + 1];
+        Course[] memory _courses = new Course[](EnumerableSet.length(listCourseIds));
+        for (uint i = 0; i < EnumerableSet.length(listCourseIds); i++) {
+            _courses[i] = courses[EnumerableSet.at(listCourseIds, i)];
         }
         return _courses;
     }
     // Xem danh sách khóa học của một tác giả
     function getCoursesByAuthor(address author) public view returns (Course[] memory) {
-        uint[] memory _courseIds = coursesByAuthor[author];
-        Course[] memory _courses = new Course[](_courseIds.length);
-        for (uint i = 0; i < _courseIds.length; i++) {
-            _courses[i] = courses[_courseIds[i]];
+        Course[] memory _courses = new Course[](EnumerableSet.length(coursesByAuthor[author]));
+        for (uint i = 0; i < EnumerableSet.length(coursesByAuthor[author]); i++) {
+            _courses[i] = courses[EnumerableSet.at(coursesByAuthor[author], i)];
         }
         return _courses;
     }
     // Tạo một khóa học mới
     function createCourse(string memory name, string memory description) public {
         courseCount++;
-        courses[courseCount] = Course(courseCount, name, description, new uint[](0), msg.sender);
-        coursesByAuthor[msg.sender].push(courseCount);
+        courses[courseCount] = Course(courseCount, name, description, msg.sender);
+        EnumerableSet.add(coursesByAuthor[msg.sender], courseCount);
+        EnumerableSet.add(listCourseIds, courseCount);
         emit CourseChange(courseCount, name, description, msg.sender);
     }
     // Chỉnh sửa thông tin khóa học
@@ -81,14 +94,16 @@ contract CoursesStorage {
     }
     // Xóa khóa học
     function deleteCourse(uint courseId) public requireCourseAuthor(courseId) {
+        EnumerableSet.remove(coursesByAuthor[msg.sender], courseId);
+        EnumerableSet.remove(listCourseIds, courseId);
         delete courses[courseId];
     }
 
     // Xem danh sách thẻ từ của một khóa học
     function getCardsByCourse(uint courseId) public view returns (Card[] memory) {
-        Card[] memory _cards = new Card[](courses[courseId].cardIds.length);
-        for (uint i = 0; i < courses[courseId].cardIds.length; i++) {
-            _cards[i] = cards[courses[courseId].cardIds[i]];
+        Card[] memory _cards = new Card[](EnumerableSet.length(cardsInCourse[courseId]));
+        for (uint i = 0; i < EnumerableSet.length(cardsInCourse[courseId]); i++) {
+            _cards[i] = cards[EnumerableSet.at(cardsInCourse[courseId], i)];
         }
         return _cards;
     }
@@ -96,8 +111,8 @@ contract CoursesStorage {
     function createCard(string memory word, string memory meaning, string memory example, uint courseId) public requireCourseAuthor(courseId) {
         cardCount++;
         cards[cardCount] = Card(cardCount, word, meaning, example, courseId);
-        courses[courseId].cardIds.push(cardCount);
-        cardsInCourse[courseId].push(cardCount);
+        EnumerableSet.add(cardsInCourse[courseId], cardCount);
+        EnumerableSet.add(listCardIds, cardCount);
         emit CardChange(cardCount, word, meaning, example, courseId);
     }
     // Sửa thông tin thẻ từ
@@ -109,6 +124,8 @@ contract CoursesStorage {
     }
     // Xóa thẻ từ
     function deleteCard(uint cardId) public requireCourseAuthor(cards[cardId].courseId) {
+        EnumerableSet.remove(cardsInCourse[cards[cardId].courseId], cardId);
+        EnumerableSet.remove(listCardIds, cardId);
         delete cards[cardId];
     }
 }

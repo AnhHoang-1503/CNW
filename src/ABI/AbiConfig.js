@@ -1,7 +1,7 @@
 import { ethers } from 'ethers'
 
 import contractABI from './artifacts/contracts/Main.sol/Main.json'
-const contractAddress = '0x3923D3a2c8bCef2F44F03C92dec362f08B2C4276'
+const contractAddress = '0x5dAEe35EC88aAc504F1Fe26288A6C3a1307AAE78'
 
 export var provider
 export var signer
@@ -40,7 +40,6 @@ export async function execute(fn, params = []) {
       var detailError = abiInterface.parseError(error.data)
       error.name = detailError.fragment.name
       error.data = detailError
-      error.message = 'Transaction error'
     } catch (error) {}
 
     throw error
