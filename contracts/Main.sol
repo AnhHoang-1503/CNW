@@ -2,7 +2,6 @@
 pragma solidity 0.8.20;
 
 import "./CoursesStorage.sol";
-import "hardhat/console.sol";
 
 contract Main is CoursesStorage, Ownable {
     constructor() Ownable(msg.sender) payable {

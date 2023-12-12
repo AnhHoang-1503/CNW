@@ -128,4 +128,23 @@ contract CoursesStorage {
         EnumerableSet.remove(listCardIds, cardId);
         delete cards[cardId];
     }
+
+    mapping(address => EnumerableSet.UintSet) private userCards;
+
+    // Thêm card vào danh sách của người dùng
+    function addUserCard(uint cardId) public {
+        EnumerableSet.add(userCards[msg.sender], cardId);
+    }
+    // Xóa card khỏi danh sách của người dùng
+    function removeUserCard(uint cardId) public {
+        EnumerableSet.remove(userCards[msg.sender], cardId);
+    }
+    // Xem danh sách card của người dùng
+    function getUserCards() public view returns (Card[] memory) {
+        Card[] memory result = new Card[](EnumerableSet.length(userCards[msg.sender]));
+        for (uint i = 0; i < EnumerableSet.length(userCards[msg.sender]); i++) {
+            result[i] = cards[EnumerableSet.at(userCards[msg.sender], i)];
+        }
+        return result;
+    }
 }
