@@ -21,5 +21,6 @@ export class Course {
         this.name = data.name;
         this.description = data.description;
         this.author = data.author;
+        this.img = data.img || "default_course.png";
     }
 }

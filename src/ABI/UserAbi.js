@@ -1,4 +1,4 @@
-import { contract, execute } from "./AbiConfig";
+import { contract, execute, signer } from "./AbiConfig";
 
 import { User } from "./Class";
 
@@ -69,6 +69,14 @@ async function getUserByAddress(address) {
     return new User(user);
 }
 
+/**
+ * Lấy địa chỉ người dùng hiện tại
+ * @returns {address} Địa chỉ người dùng
+ */
+async function getUserAddress() {
+    return await signer.getAddress();
+}
+
 export default {
     /**
      * Lấy danh sách người dùng
@@ -101,4 +109,9 @@ export default {
      */
     getUserByAddress: async (address) =>
         await execute(getUserByAddress, [address]),
+    /**
+     * Lấy địa chỉ người dùng hiện tại
+     * @returns {address} Địa chỉ người dùng
+     */
+    getUserAddress: async () => await execute(getUserAddress),
 };

@@ -40,8 +40,8 @@ export async function execute(fn, params = []) {
             var detailError = abiInterface.parseError(error.data);
             error.name = detailError.fragment.name;
             error.data = detailError;
+            debugger;
         } catch (error) {}
-
         throw error;
     }
 }
