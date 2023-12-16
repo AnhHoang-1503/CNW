@@ -1,7 +1,12 @@
 <script setup>
-import { ref } from "vue";
+import { computed, reactive, ref } from "vue";
 import Search from "../../components/Search.vue";
 import { RouterLink } from "vue-router";
+import { useRouter } from "vue-router";
+
+const route = useRouter();
+
+const routeName = computed(() => route.currentRoute.value.name);
 
 const search = ref("");
 </script>
@@ -27,10 +32,16 @@ const search = ref("");
             </div>
             <div class="navbar">
                 <RouterLink to="/" style="width: 73px"> trang chủ </RouterLink>
-                <RouterLink to="/courses" style="width: 71px"
+                <RouterLink
+                    to="/courses"
+                    style="width: 71px"
+                    :class="routeName == 'course' ? 'link_active' : ''"
                     >khoá học</RouterLink
                 >
-                <RouterLink to="/mycourses" style="width: 127px"
+                <RouterLink
+                    to="/mycourses"
+                    style="width: 127px"
+                    :class="routeName == 'mycourse' ? 'link_active' : ''"
                     >khoá học của tôi</RouterLink
                 >
                 <RouterLink to="/profile" style="width: 45px">hồ sơ</RouterLink>
@@ -106,6 +117,10 @@ const search = ref("");
 }
 
 .navbar .router-link-active {
+    font-weight: 700;
+}
+
+.link_active {
     font-weight: 700;
 }
 </style>

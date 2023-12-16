@@ -1,14 +1,20 @@
 <script setup>
 import { onMounted, ref } from "vue";
 import { useHomeStore } from "../stores/homeStore";
-import CourseHome from "../components/CourseHome.vue";
+import CourseHome from "@/components/CourseHome.vue";
 import Search from "../components/Search.vue";
+import { useRoute } from "vue-router";
+
+const route = useRoute();
 
 const homeStore = useHomeStore();
 const search = ref("");
 
 onMounted(async () => {
-    const res = await homeStore.GetAllCourses();
+    console.log(route);
+    if (!homeStore.listCourses.length > 0) {
+        await homeStore.GetAllCourses();
+    }
 });
 </script>
 

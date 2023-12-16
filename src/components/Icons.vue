@@ -29,4 +29,8 @@ defineProps({
 .icon_search {
     background-image: url("@/assets/icons/search_icon.svg");
 }
+
+.icon_delete {
+    background-image: url("@/assets/icons/delete.svg");
+}
 </style>

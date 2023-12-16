@@ -1,7 +1,7 @@
 <script setup>
 import { ref, watch, onMounted } from "vue";
 import Search from "../components/Search.vue";
-import ListCourses from "../components/ListCourses.vue";
+import ListCourses from "@/components/ListCourses.vue";
 import { useHomeStore } from "../stores/homeStore";
 
 const homeStore = useHomeStore();

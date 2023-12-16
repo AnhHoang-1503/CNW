@@ -1,5 +1,9 @@
 <script setup>
 import { ref } from "vue";
+import { useRouter, useRoute } from "vue-router";
+
+const router = useRouter();
+const route = useRoute();
 
 const props = defineProps({
     listCourses: {
@@ -8,7 +12,9 @@ const props = defineProps({
     },
 });
 
-const start = ref(0);
+function openCourse(course) {
+    router.push(`${route.path}/${course.id}`);
+}
 </script>
 
 <template>
@@ -31,7 +37,7 @@ const start = ref(0);
                         </div>
                     </div>
                     <div class="course_right">
-                        <div class="button">Mở</div>
+                        <div class="button" @click="openCourse(course)">Mở</div>
                     </div>
                 </div>
             </div>
@@ -64,6 +70,7 @@ const start = ref(0);
     gap: 40px;
     max-height: calc(100px * 5 + 40px * 4);
     overflow-y: auto;
+    padding: 4px 0;
     padding-right: 20px;
 }
 

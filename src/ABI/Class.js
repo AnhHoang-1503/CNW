@@ -5,6 +5,7 @@ export class Card {
         this.meaning = data.meaning;
         this.example = data.example;
         this.courseId = data.courseId;
+        this.img = data.img || "default_course.png";
     }
 }
 

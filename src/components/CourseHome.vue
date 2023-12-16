@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="container">
+        <div class="container" @click="openCourse()">
             <div
                 class="img"
                 :style="{
@@ -14,12 +14,18 @@
 </template>
 
 <script setup>
-defineProps({
+import { useRouter } from "vue-router";
+const props = defineProps({
     course: {
         type: Object,
         default: () => {},
     },
 });
+
+const router = useRouter();
+function openCourse() {
+    router.push(`/courses/${props.course.id}`);
+}
 </script>
 
 <style scoped>
