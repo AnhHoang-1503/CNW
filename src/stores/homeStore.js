@@ -9,43 +9,39 @@ export const useHomeStore = defineStore("home", () => {
     const myCourses = ref([]);
     const currentCourse = ref({});
     const isLoading = ref(false);
+    const userAddress = ref("");
 
-    async function GetAllCourses() {
+    async function getAllCourses() {
         try {
-            listCourses.value = await CourseAbi.getCourses();
-            for (let i = 0; i < 10; i++) {
-                let course = { ...listCourses.value[0] };
-                course.name = i + 1;
-                listCourses.value.push(course);
-            }
+            var list = await CourseAbi.getCourses();
+            listCourses.value = list.reverse();
             return listCourses.value;
         } catch (e) {
             console.log(e);
         }
     }
 
-    async function GetMyCourses() {
+    async function getMyCourses() {
         try {
-            const userAddress = await UserAbi.getUserAddress();
-            myCourses.value = await CourseAbi.getCoursesByAuthor(userAddress);
-            for (let i = 0; i < 10; i++) {
-                let course = { ...myCourses.value[0] };
-                course.name = i + 1;
-                myCourses.value.push(course);
+            if (userAddress.value == "") {
+                await getUserAddress();
             }
+            var list = await CourseAbi.getCoursesByAuthor(userAddress.value);
+            myCourses.value = list.reverse();
             return myCourses.value;
         } catch (e) {
             console.log(e);
         }
     }
 
-    async function GetCourseById(id) {
+    async function getCourseById(id) {
         try {
             if (!listCourses.value.length > 0) {
-                await GetAllCourses();
+                await getAllCourses();
             }
             let course = listCourses.value.find((course) => course.id == id);
             let cards = await CardAbi.getCardsByCourse(course.id);
+            cards = cards.reverse();
             currentCourse.value = { course, cards };
             return currentCourse.value;
         } catch (e) {
@@ -53,11 +49,58 @@ export const useHomeStore = defineStore("home", () => {
         }
     }
 
+    async function createCard(word, meaning, example, img, courseId) {
+        try {
+            await CardAbi.createCard(word, meaning, example, courseId, img);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    async function createCourse(name, description, img) {
+        try {
+            await CourseAbi.createCourse(name, description, img);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    async function getUserAddress() {
+        try {
+            userAddress.value = await UserAbi.getUserAddress();
+            return userAddress.value;
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    async function deleteCourse(id) {
+        try {
+            await CourseAbi.deleteCourse(id);
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    async function deleteCard(id) {
+        try {
+            await CardAbi.deleteCard(id);
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
     return {
         listCourses,
-        GetAllCourses,
+        getAllCourses,
         myCourses,
-        GetMyCourses,
-        GetCourseById,
+        getMyCourses,
+        getCourseById,
+        createCard,
+        createCourse,
+        getUserAddress,
+        userAddress,
+        deleteCourse,
+        deleteCard,
     };
 });

@@ -23,9 +23,10 @@ async function getCardsByCourse(courseId) {
  * @param {string} meaning Nghĩa
  * @param {string} example Ví dụ
  * @param {string} courseId Mã khóa học
+ * @param {string} img Hình ảnh
  */
-async function createCard(word, meaning, example, courseId) {
-    var tx = await contract.createCard(word, meaning, example, courseId);
+async function createCard(word, meaning, example, courseId, img) {
+    var tx = await contract.createCard(word, meaning, example, courseId, img);
 
     // Đợi giao dịch được xác nhận
     await tx.wait();
@@ -37,9 +38,10 @@ async function createCard(word, meaning, example, courseId) {
  * @param {string} word Từ vựng
  * @param {string} meaning Nghĩa
  * @param {string} example Ví dụ
+ * @param {string} img Hình ảnh
  */
-async function updateCard(id, word, meaning, example) {
-    var tx = await contract.updateCard(id, word, meaning, example);
+async function updateCard(id, word, meaning, example, img) {
+    var tx = await contract.updateCard(id, word, meaning, example, img);
 
     // Đợi giao dịch được xác nhận
     await tx.wait();
@@ -105,18 +107,20 @@ export default {
      * @param {string} meaning Nghĩa
      * @param {string} example Ví dụ
      * @param {string} courseId Mã khóa học
+     * @param {string} img Hình ảnh
      */
-    createCard: async (word, meaning, example, courseId) =>
-        await execute(createCard, [word, meaning, example, courseId]),
+    createCard: async (word, meaning, example, courseId, img) =>
+        await execute(createCard, [word, meaning, example, courseId, img]),
     /**
      * Chỉnh sửa thẻ học
      * @param {string} id Id card
      * @param {string} word Từ vựng
      * @param {string} meaning Nghĩa
      * @param {string} example Ví dụ
+     * @param {string} img Hình ảnh
      */
-    updateCard: async (id, word, meaning, example) =>
-        await execute(updateCard, [id, word, meaning, example]),
+    updateCard: async (id, word, meaning, example, img) =>
+        await execute(updateCard, [id, word, meaning, example, img]),
     /**
      * Xóa thẻ học
      * @param {string} id Id card

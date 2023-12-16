@@ -10,7 +10,7 @@ const listCourses = ref([]);
 
 onMounted(async () => {
     if (!homeStore.listCourses.length > 0) {
-        listCourses.value = await homeStore.GetAllCourses();
+        listCourses.value = await homeStore.getAllCourses();
     } else {
         listCourses.value = homeStore.listCourses;
     }

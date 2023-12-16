@@ -11,9 +11,8 @@ const homeStore = useHomeStore();
 const search = ref("");
 
 onMounted(async () => {
-    console.log(route);
     if (!homeStore.listCourses.length > 0) {
-        await homeStore.GetAllCourses();
+        await homeStore.getAllCourses();
     }
 });
 </script>

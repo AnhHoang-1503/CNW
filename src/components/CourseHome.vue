@@ -7,14 +7,17 @@
                     backgroundImage: `url(/store/${course.img})`,
                 }"
             ></div>
-            <div class="name">{{ course.name }}</div>
-            <div class="description">{{ course.description }}</div>
+            <div class="name">{{ limitText(course.name, 30) }}</div>
+            <div class="description">
+                {{ limitText(course.description, 30) }}
+            </div>
         </div>
     </div>
 </template>
 
 <script setup>
 import { useRouter } from "vue-router";
+import { limitText } from "@/helper/helper.js";
 const props = defineProps({
     course: {
         type: Object,

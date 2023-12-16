@@ -5,12 +5,13 @@ import "./CoursesStorage.sol";
 
 contract Main is CoursesStorage, Ownable {
     constructor() Ownable(msg.sender) payable {
-        createUser("Admin");
+        createUser("Admin", "");
     }
 
     struct User {
         uint id;
         string name;
+        string img;
     }   
 
     uint public userCount = 0;
@@ -30,17 +31,17 @@ contract Main is CoursesStorage, Ownable {
         _;
     }
 
-    event UserCreated(uint id, string name);
-    event UserChanged(uint id, string name);
+    event UserCreated(uint id, string name, string img);
+    event UserChanged(uint id, string name, string img);
 
     // Tạo một người dùng mới
-    function createUser(string memory name) public nameNotExists(name) {
+    function createUser(string memory name, string memory img) public nameNotExists(name) {
         if (bytes(users[msg.sender].name).length != 0) {
             revert UserAlreadyExists(msg.sender);
         }
 
         userCount++;
-        users[msg.sender] = User(userCount, name);
+        users[msg.sender] = User(userCount, name, img);
 
         EnumerableSet.add(userAddresses ,msg.sender);
         nameExists[name] = true;
@@ -58,11 +59,12 @@ contract Main is CoursesStorage, Ownable {
         return users[msg.sender];
     }
     // Sửa thông tin người dùng 
-    function updateUser(string memory name) nameNotExists(name) public {
+    function updateUser(string memory name, string memory img) nameNotExists(name) public {
         nameExists[name] = true;
         nameExists[users[msg.sender].name] = false;
         users[msg.sender].name = name;
-        emit UserChanged(users[msg.sender].id, name);
+        users[msg.sender].img = img;
+        emit UserChanged(users[msg.sender].id, name, img);
     }
     // Xóa người dùng
     function deleteUser() public {

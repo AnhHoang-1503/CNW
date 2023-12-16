@@ -25,6 +25,7 @@ contract CoursesStorage {
         string meaning;
         string example;
         uint courseId;
+        string img;
     }
 
     // Khóa học
@@ -33,6 +34,7 @@ contract CoursesStorage {
         string name;
         string description;
         address author;
+        string img;
     }
 
     // Danh sách các khóa học
@@ -59,8 +61,8 @@ contract CoursesStorage {
         _;
     }
 
-    event CourseChange(uint indexed courseId, string name, string description, address author);
-    event CardChange(uint indexed cardId, string word, string meaning, string example, uint courseId);
+    event CourseChange(uint indexed courseId, string name, string description, address author, string img);
+    event CardChange(uint indexed cardId, string word, string meaning, string example, uint courseId, string img);
 
     // Xem danh sách toàn bộ khóa học
     function getCourses() public view returns (Course[] memory) {
@@ -79,18 +81,19 @@ contract CoursesStorage {
         return _courses;
     }
     // Tạo một khóa học mới
-    function createCourse(string memory name, string memory description) public {
+    function createCourse(string memory name, string memory description, string memory img) public {
         courseCount++;
-        courses[courseCount] = Course(courseCount, name, description, msg.sender);
+        courses[courseCount] = Course(courseCount, name, description, msg.sender, img);
         EnumerableSet.add(coursesByAuthor[msg.sender], courseCount);
         EnumerableSet.add(listCourseIds, courseCount);
-        emit CourseChange(courseCount, name, description, msg.sender);
+        emit CourseChange(courseCount, name, description, msg.sender, img);
     }
     // Chỉnh sửa thông tin khóa học
-    function updateCourse(uint courseId, string memory name, string memory description ) public requireCourseAuthor(courseId) {
+    function updateCourse(uint courseId, string memory name, string memory description, string memory img ) public requireCourseAuthor(courseId) {
         courses[courseId].name = name;
         courses[courseId].description = description;
-        emit CourseChange(courseId, name, description, msg.sender);
+        courses[courseId].img = img;
+        emit CourseChange(courseId, name, description, msg.sender, img);
     }
     // Xóa khóa học
     function deleteCourse(uint courseId) public requireCourseAuthor(courseId) {
@@ -108,19 +111,20 @@ contract CoursesStorage {
         return _cards;
     }
     // Tạo một thẻ từ mới
-    function createCard(string memory word, string memory meaning, string memory example, uint courseId) public requireCourseAuthor(courseId) {
+    function createCard(string memory word, string memory meaning, string memory example, uint courseId, string memory img) public requireCourseAuthor(courseId) {
         cardCount++;
-        cards[cardCount] = Card(cardCount, word, meaning, example, courseId);
+        cards[cardCount] = Card(cardCount, word, meaning, example, courseId, img);
         EnumerableSet.add(cardsInCourse[courseId], cardCount);
         EnumerableSet.add(listCardIds, cardCount);
-        emit CardChange(cardCount, word, meaning, example, courseId);
+        emit CardChange(cardCount, word, meaning, example, courseId, img);
     }
     // Sửa thông tin thẻ từ
-    function updateCard(uint cardId, string memory word, string memory meaning, string memory example) public requireCourseAuthor(cards[cardId].courseId){
+    function updateCard(uint cardId, string memory word, string memory meaning, string memory example, string memory img) public requireCourseAuthor(cards[cardId].courseId){
         cards[cardId].word = word;
         cards[cardId].meaning = meaning;
         cards[cardId].example = example;
-        emit CardChange(cardId, word, meaning, example, cards[cardId].courseId);
+        cards[cardId].img = img;
+        emit CardChange(cardId, word, meaning, example, cards[cardId].courseId, img);
     }
     // Xóa thẻ từ
     function deleteCard(uint cardId) public requireCourseAuthor(cards[cardId].courseId) {

@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from "vue";
 import { useRouter, useRoute } from "vue-router";
+import { limitText } from "@/helper/helper.js";
 
 const router = useRouter();
 const route = useRoute();
@@ -30,15 +31,20 @@ function openCourse(course) {
                             }"
                         ></div>
                         <div class="name_and_description">
-                            <div class="name">{{ course.name }}</div>
+                            <div class="name">
+                                {{ limitText(course.name, 40) }}
+                            </div>
                             <div class="description">
-                                {{ course.description }}
+                                {{ limitText(course.description, 60) }}
                             </div>
                         </div>
                     </div>
                     <div class="course_right">
                         <div class="button" @click="openCourse(course)">Mở</div>
                     </div>
+                </div>
+                <div class="blank_list" v-if="listCourses.length <= 0">
+                    Không có khoá học phù hợp
                 </div>
             </div>
             <div class="more_button"></div>
@@ -173,5 +179,10 @@ function openCourse(course) {
 
 .more_button:active {
     transform: scale(3) scaleX(1.5) translateY(0px);
+}
+
+.blank_list {
+    font-size: 24px;
+    color: var(--primary-color);
 }
 </style>

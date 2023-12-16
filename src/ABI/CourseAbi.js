@@ -35,9 +35,10 @@ async function getCoursesByAuthor(author) {
  * Tạo khóa học mới
  * @param {string} name Tên khóa học
  * @param {string} description Nội dung khóa học
+ * @param {string} img Hình ảnh
  */
-async function createCourse(name, description) {
-    var tx = await contract.createCourse(name, description);
+async function createCourse(name, description, img) {
+    var tx = await contract.createCourse(name, description, img);
 
     // Đợi giao dịch được xác nhận
     await tx.wait();
@@ -48,9 +49,10 @@ async function createCourse(name, description) {
  * @param {string} id Id khóa học
  * @param {string} name Tên khóa học
  * @param {string} description Nội dung khóa học
+ * @param {string} img Hình ảnh
  */
-async function updateCourse(id, name, description) {
-    var tx = await contract.updateCourse(id, name, description);
+async function updateCourse(id, name, description, img) {
+    var tx = await contract.updateCourse(id, name, description, img);
 
     // Đợi giao dịch được xác nhận
     await tx.wait();
@@ -85,16 +87,16 @@ export default {
      * @param {string} name Tên khóa học
      * @param {string} description Nội dung khóa học
      */
-    createCourse: async (name, description) =>
-        await execute(createCourse, [name, description]),
+    createCourse: async (name, description, img) =>
+        await execute(createCourse, [name, description, img]),
     /**
      * Chỉnh sửa khóa học
      * @param {string} id Id khóa học
      * @param {string} name Tên khóa học
      * @param {string} description Nội dung khóa học
      */
-    updateCourse: async (id, name, description) =>
-        await execute(updateCourse, [id, name, description]),
+    updateCourse: async (id, name, description, img) =>
+        await execute(updateCourse, [id, name, description, img]),
 
     /**
      * Xóa khóa học

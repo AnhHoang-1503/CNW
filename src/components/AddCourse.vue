@@ -4,7 +4,7 @@ import { useCourseDetailStore } from "../stores/courseDetailStore";
 import { useHomeStore } from "../stores/homeStore";
 import Icons from "@/components/Icons.vue";
 
-const emits = defineEmits(["add_card"]);
+const emits = defineEmits(["add_course", "cancel"]);
 
 const courseDetailStore = useCourseDetailStore();
 const homeStore = useHomeStore();
@@ -14,9 +14,8 @@ const defaultImg = ref(`url(/store/upload.png)`);
 const imgInput = ref(null);
 const imgElement = ref(null);
 
-const word = ref("");
-const meaning = ref("");
-const example = ref("");
+const name = ref("");
+const description = ref("");
 const img = ref("");
 const isLoading = ref(false);
 
@@ -33,20 +32,14 @@ function handleUploadImg(event) {
 }
 
 function cancel() {
-    courseDetailStore.isOpenAddCard = false;
+    emits("cancel");
 }
 
 async function save() {
     isLoading.value = true;
-    await homeStore.createCard(
-        word.value,
-        meaning.value,
-        example.value,
-        img.value,
-        courseDetailStore.course.course.id
-    );
-    emits("add_card");
+    await homeStore.createCourse(name.value, description.value, img.value);
     isLoading.value = false;
+    emits("add_course");
     cancel();
 }
 </script>
@@ -55,43 +48,36 @@ async function save() {
     <div>
         <div class="container">
             <div class="content">
-                <div class="card">
-                    <div class="card_left">
-                        <div class="word">
-                            <div class="label" for="word">Từ</div>
+                <div class="course">
+                    <div class="course_left">
+                        <div class="name">
+                            <div class="label" for="name">Tên khoá học</div>
                             <div class="value">
-                                <input type="text" id="word" v-model="word" />
+                                <input type="text" id="name" v-model="name" />
                             </div>
                         </div>
-                        <div class="meaning">
-                            <div class="label" for="meaning">Nghĩa</div>
-                            <div class="value">
-                                <input
-                                    type="text"
-                                    id="meaning"
-                                    v-model="meaning"
-                                />
-                            </div>
-                        </div>
-                        <div class="example">
-                            <div class="label" for="example">Ví dụ</div>
+
+                        <div class="description">
+                            <div class="label" for="description">Mô tả</div>
                             <div class="value">
                                 <textarea
                                     type="text"
-                                    id="example"
-                                    v-model="example"
+                                    id="description"
+                                    v-model="description"
                                 >
                                 </textarea>
                             </div>
                         </div>
                     </div>
-                    <div class="card_right">
+                    <div class="course_right">
                         <div for="img" class="label">Hình ảnh</div>
                         <div
                             ref="imgElement"
                             class="input_file img"
                             :style="{
-                                backgroundImage: defaultImg,
+                                backgroundImage: img
+                                    ? `url(${img})`
+                                    : defaultImg,
                             }"
                             @click="imgInput.click()"
                         >
@@ -134,7 +120,7 @@ async function save() {
 }
 
 .content {
-    width: 1000px;
+    width: 800px;
     background-color: #fff;
     padding: 40px;
     border-radius: 15px;
@@ -186,14 +172,14 @@ async function save() {
     background-color: #2e5f8e;
 }
 
-.card {
+.course {
     display: flex;
     justify-content: space-between;
     align-items: start;
     width: 100%;
 }
 
-.card_left {
+.course_left {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -202,9 +188,9 @@ async function save() {
     gap: 20px;
 }
 
-.word,
+.name,
 .meaning,
-.example {
+.description {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -212,13 +198,13 @@ async function save() {
     width: 100%;
 }
 
-#example {
+#description {
     height: 72px;
     padding: 12px;
     resize: none;
 }
 
-#example::-webkit-scrollbar {
+#description::-webkit-scrollbar {
     display: none;
 }
 
@@ -226,7 +212,7 @@ async function save() {
     width: 100%;
 }
 
-.card_right {
+.course_right {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -256,7 +242,7 @@ textarea {
 
 .img {
     width: 100%;
-    height: 236px;
+    height: 156px;
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;

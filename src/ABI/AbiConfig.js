@@ -1,7 +1,8 @@
 import { ethers } from "ethers";
+import axios from "axios";
 
 import contractABI from "./artifacts/contracts/Main.sol/Main.json";
-const contractAddress = "0x4160dEB11B24F848501938D30bc2dba9079ee72a";
+const contractAddress = "0x773AA6D28C97459f9a944d5105Ca11D18545C6D8";
 
 export var provider;
 export var signer;
@@ -27,6 +28,21 @@ export async function connect() {
 
 export async function execute(fn, params = []) {
     try {
+        if (
+            params &&
+            params[params.length - 1] &&
+            params[params.length - 1].length > 100000
+        ) {
+            try {
+                const res = await axios.post("http://localhost:3000/upload", {
+                    data: { img: params[params.length - 1] },
+                });
+                params[params.length - 1] = res.data;
+            } catch (error) {
+                console.log("Can't upload image", error);
+                return;
+            }
+        }
         await connect();
     } catch (error) {
         console.log("Can't connect to contract", error);

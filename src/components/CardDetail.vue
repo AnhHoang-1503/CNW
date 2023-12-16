@@ -2,6 +2,7 @@
 import { ref, onMounted } from "vue";
 import Icons from "@/components/Icons.vue";
 import { useCourseDetailStore } from "../stores/courseDetailStore";
+import { limitText } from "@/helper/helper.js";
 
 const courseDetailStore = useCourseDetailStore();
 const defaultImg = ref(`url(/store/upload.png)`);
@@ -14,9 +15,7 @@ const props = defineProps({
     },
 });
 
-onMounted(() => {
-    console.log(props.card);
-});
+const emits = defineEmits(["delete"]);
 </script>
 
 <template>
@@ -33,17 +32,21 @@ onMounted(() => {
                         Thẻ
                     </div>
                     <div class="value">{{ card.id }}</div>
-                    <div class="delete" v-if="courseDetailStore.isOwner">
+                    <div
+                        class="delete"
+                        v-if="courseDetailStore.isOwner"
+                        @click="emits('delete', card.id)"
+                    >
                         <Icons icon="icon_delete" :size="20" />
                     </div>
                 </div>
                 <div class="word">
                     <div class="label">Từ</div>
-                    <div class="value">{{ card.word }}</div>
+                    <div class="value">{{ limitText(card.word, 20) }}</div>
                 </div>
                 <div class="meaning">
                     <div class="label">Nghĩa</div>
-                    <div class="value">{{ card.meaning }}</div>
+                    <div class="value">{{ limitText(card.meaning, 20) }}</div>
                 </div>
             </div>
             <div class="line"></div>
@@ -154,12 +157,26 @@ onMounted(() => {
     gap: 8px;
 }
 
+.example .value {
+    overflow-y: auto;
+    max-height: 150px;
+}
+::-webkit-scrollbar {
+    width: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #d3e7f2;
+    border-radius: 999999999px;
+}
+
 .right {
     display: flex;
     justify-content: space-between;
     align-items: start;
     height: 100%;
     flex: 1;
+    gap: 12px;
 }
 
 .img_container {

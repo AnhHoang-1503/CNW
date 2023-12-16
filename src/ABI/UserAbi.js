@@ -29,9 +29,10 @@ async function getUser() {
 /**
  * Tạo người dùng mới
  * @param {string} name Tên người dùng
+ * @param {string} img Hình ảnh
  */
-async function createUser(name) {
-    var tx = await contract.createUser(name);
+async function createUser(name, img) {
+    var tx = await contract.createUser(name, img);
 
     // Đợi giao dịch được xác nhận
     await tx.wait();
@@ -40,9 +41,10 @@ async function createUser(name) {
 /**
  * Sửa thông tin người dùng hiện tại
  * @param {string} name Tên người dùng
+ * @param {string} img Hình ảnh
  */
-async function updateUser(name) {
-    var tx = await contract.updateUser(name);
+async function updateUser(name, img) {
+    var tx = await contract.updateUser(name, img);
 
     // Đợi giao dịch được xác nhận
     await tx.wait();
@@ -91,13 +93,15 @@ export default {
     /**
      * Tạo người dùng mới
      * @param {string} name Tên người dùng
+     * @param {string} img Hình ảnh
      */
-    createUser: async (name) => await execute(createUser, [name]),
+    createUser: async (name, img) => await execute(createUser, [name, img]),
     /**
      * Sửa thông tin người dùng hiện tại
      * @param {string} name Tên người dùng
+     * @param {string} img Hình ảnh
      */
-    updateUser: async (name) => await execute(updateUser, [name]),
+    updateUser: async (name, img) => await execute(updateUser, [name, img]),
     /**
      * Xóa người dùng hiện tại
      */

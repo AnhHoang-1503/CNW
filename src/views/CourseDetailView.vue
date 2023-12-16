@@ -1,29 +1,34 @@
 <script setup>
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { onMounted, ref } from "vue";
 import { useHomeStore } from "../stores/homeStore";
-import CardDetail from "../components/CardDetail.vue";
-import Icons from "../components/Icons.vue";
+import CardDetail from "@/components/CardDetail.vue";
+import Icons from "@/components/Icons.vue";
 import { useCourseDetailStore } from "../stores/courseDetailStore";
-import AddCard from "../components/AddCard.vue";
+import AddCard from "@/components/AddCard.vue";
+import Popup from "../components/Popup.vue";
 
 const route = useRoute();
+const router = useRouter();
 const homeStore = useHomeStore();
 const courseDetailStore = useCourseDetailStore();
 const imgInput = ref(null);
 const img = ref(null);
-const defaultImg = ref(`url(/store/default_course.png)`);
+const defaultImg = ref(`url(/store/upload.png)`);
+const warningText = ref("");
+const showWarning = ref(false);
+const action = ref({
+    delete: "course",
+    id: null,
+});
+const isLoading = ref(false);
 
 onMounted(async () => {
-    courseDetailStore.course = await homeStore.GetCourseById(
-        BigInt(route.params.id)
-    );
-    if (route.name == "mycourse") {
+    courseDetailStore.isOwner = false;
+    await getCourse();
+    await homeStore.getUserAddress();
+    if (courseDetailStore.course.course.author == homeStore.userAddress) {
         courseDetailStore.isOwner = true;
-        defaultImg.value = `url(/store/upload.png)`;
-    } else {
-        courseDetailStore.isOwner = false;
-        defaultImg.value = `url(/store/default_course.png)`;
     }
 });
 
@@ -37,12 +42,42 @@ function handleUploadImg(event) {
         reader.readAsDataURL(file);
     }
 }
+
+async function getCourse() {
+    await courseDetailStore.getCourse(BigInt(route.params.id));
+}
+
+async function accept() {
+    isLoading.value = true;
+    if (action.value.delete == "course") {
+        await homeStore.deleteCourse(action.value.id);
+        await homeStore.getAllCourses();
+        await router.push({ name: "courses" });
+    } else {
+        await homeStore.deleteCard(action.value.id);
+        await getCourse();
+    }
+    showWarning.value = false;
+    isLoading.value = false;
+}
 </script>
 
 <template>
     <div>
         <Teleport to="body">
-            <AddCard v-if="courseDetailStore.isOpenAddCard" />
+            <AddCard
+                v-if="courseDetailStore.isOpenAddCard"
+                @add_card="getCourse()"
+            />
+        </Teleport>
+        <Teleport to="body">
+            <Popup
+                v-if="showWarning"
+                :text="warningText"
+                @cancel="showWarning = false"
+                @accept="accept()"
+                :isLoading="isLoading"
+            />
         </Teleport>
         <div class="container">
             <div class="top">
@@ -54,12 +89,50 @@ function handleUploadImg(event) {
                                 : "Khoá học"
                         }}
                     </span>
-                    <div class="delete_button" v-if="courseDetailStore.isOwner">
+                    <div
+                        class="delete_button"
+                        v-if="courseDetailStore.isOwner"
+                        @click="
+                            () => {
+                                action.delete = 'course';
+                                action.id = courseDetailStore.course.course.id;
+                                warningText =
+                                    'Bạn có chắc chắn muốn xóa khoá học này?';
+                                showWarning = true;
+                            }
+                        "
+                    >
                         <Icons icon="icon_delete" :size="36" />
                     </div>
                 </div>
-                <div class="add_card" v-if="courseDetailStore.isOwner">
-                    <button class="add_button">Thêm thẻ mới</button>
+                <div class="top_button">
+                    <div class="join">
+                        <button class="join_button add_button">
+                            Luyện tập khoá học
+                        </button>
+                    </div>
+                    <div class="join">
+                        <button
+                            class="join_button add_button"
+                            @click="
+                                () => {
+                                    router.push(
+                                        `/study/${courseDetailStore.course.course.id}`
+                                    );
+                                }
+                            "
+                        >
+                            Học khoá học
+                        </button>
+                    </div>
+                    <div class="add_card" v-if="courseDetailStore.isOwner">
+                        <button
+                            class="add_button"
+                            @click="courseDetailStore.isOpenAddCard = true"
+                        >
+                            Thêm thẻ mới
+                        </button>
+                    </div>
                 </div>
             </div>
             <div class="course">
@@ -129,7 +202,18 @@ function handleUploadImg(event) {
                     class="card"
                     v-for="card in courseDetailStore.course.cards"
                 >
-                    <CardDetail :card="card" />
+                    <CardDetail
+                        :card="card"
+                        @delete="
+                            (id) => {
+                                action.delete = 'card';
+                                action.id = id;
+                                warningText =
+                                    'Bạn có chắc chắn muốn xóa thẻ này?';
+                                showWarning = true;
+                            }
+                        "
+                    />
                 </div>
             </div>
         </div>
@@ -144,6 +228,7 @@ function handleUploadImg(event) {
     padding: 0 400px;
     padding-top: 40px;
     gap: 40px;
+    padding-bottom: 100px;
 }
 
 .top {
@@ -249,5 +334,22 @@ function handleUploadImg(event) {
     display: flex;
     flex-direction: column;
     gap: 20px;
+    max-height: 1000px;
+    overflow-y: auto;
+    padding: 4px;
+}
+
+::-webkit-scrollbar {
+    width: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #d3e7f2;
+    border-radius: 999999999px;
+}
+
+.top_button {
+    display: flex;
+    gap: 24px;
 }
 </style>

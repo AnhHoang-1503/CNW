@@ -33,4 +33,23 @@ defineProps({
 .icon_delete {
     background-image: url("@/assets/icons/delete.svg");
 }
+
+.icon_loading {
+    background-image: url("@/assets/icons/loading.svg");
+    animation: route 3s infinite linear;
+}
+
+.icon_warning {
+    background-image: url("@/assets/icons/warning.svg");
+    background-size: contain;
+}
+
+@keyframes route {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
 </style>
