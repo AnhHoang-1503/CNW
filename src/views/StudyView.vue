@@ -14,7 +14,7 @@ onMounted(async () => {
 
 <template>
     <div>
-        <h1>Welcome to Vue 3!</h1>
+        <div class="container"></div>
     </div>
 </template>
 
