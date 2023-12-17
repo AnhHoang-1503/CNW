@@ -11,6 +11,7 @@ export const useCourseDetailStore = defineStore("courseDetail", () => {
     async function getCourse(id) {
         course.value = { course: {}, cards: [] };
         course.value = await homeStore.getCourseById(id);
+        return course.value;
     }
 
     return { isOwner, course, isOpenAddCard, getCourse };

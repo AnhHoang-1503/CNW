@@ -16,7 +16,7 @@ const search = ref("");
         <div class="header">
             <div class="header_top">
                 <div class="header_left">
-                    <RouterLink to="/">Kanji Card</RouterLink>
+                    <RouterLink to="/">Flash Card</RouterLink>
                 </div>
                 <div class="header_right">
                     <div class="header_search">

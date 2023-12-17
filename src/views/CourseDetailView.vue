@@ -6,7 +6,7 @@ import CardDetail from "@/components/CardDetail.vue";
 import Icons from "@/components/Icons.vue";
 import { useCourseDetailStore } from "../stores/courseDetailStore";
 import AddCard from "@/components/AddCard.vue";
-import Popup from "../components/Popup.vue";
+import Popup from "@/components/Popup.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -107,7 +107,16 @@ async function accept() {
                 </div>
                 <div class="top_button">
                     <div class="join">
-                        <button class="join_button add_button">
+                        <button
+                            class="join_button add_button"
+                            @click="
+                                () => {
+                                    router.push(
+                                        `/practice/${courseDetailStore.course.course.id}`
+                                    );
+                                }
+                            "
+                        >
                             Luyện tập khoá học
                         </button>
                     </div>

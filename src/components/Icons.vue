@@ -44,6 +44,28 @@ defineProps({
     background-size: contain;
 }
 
+.icon_flashcard {
+    background-image: url("@/assets/icons/flashcard.png");
+    transform: rotate(-90deg) scaleY(-1);
+    filter: invert(100%) sepia(45%) saturate(174%) hue-rotate(137deg)
+        brightness(112%) contrast(100%);
+}
+
+.icon_left {
+    background-image: url("@/assets/icons/right.svg");
+    transform: rotate(180deg);
+}
+
+.icon_right {
+    background-image: url("@/assets/icons/right.svg");
+}
+
+.icon_practice {
+    background-image: url("@/assets/icons/practice.png");
+    filter: invert(100%) sepia(45%) saturate(174%) hue-rotate(137deg)
+        brightness(112%) contrast(100%);
+}
+
 @keyframes route {
     0% {
         transform: rotate(0deg);
