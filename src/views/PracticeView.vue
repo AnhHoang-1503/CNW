@@ -50,7 +50,9 @@ function getMeaningList() {
     meaningList.value.sort(() => Math.random() - 0.5);
 
     document.querySelector(".correct")?.classList.remove("correct");
-    document.querySelector(".wrong")?.classList.remove("wrong");
+    document.querySelectorAll(".wrong")?.forEach((item) => {
+        item.classList.remove("wrong");
+    });
 }
 
 function clickOption(option, event) {

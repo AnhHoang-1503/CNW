@@ -2,7 +2,7 @@ import { ethers } from "ethers";
 import axios from "axios";
 
 import contractABI from "./artifacts/contracts/Main.sol/Main.json";
-const contractAddress = "0x773AA6D28C97459f9a944d5105Ca11D18545C6D8";
+const contractAddress = "0xEF35f2e7265Bfd0d6bC2FA937164A07ade79facE";
 
 export var provider;
 export var signer;

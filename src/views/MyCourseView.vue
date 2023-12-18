@@ -3,7 +3,7 @@ import { ref, watch, onMounted } from "vue";
 import Search from "../components/Search.vue";
 import ListCourses from "@/components/ListCourses.vue";
 import { useHomeStore } from "../stores/homeStore";
-import AddCourse from "../components/AddCourse.vue";
+import AddCourse from "@/components/AddCourse.vue";
 
 const homeStore = useHomeStore();
 const search = ref("");
@@ -11,11 +11,7 @@ const listCourses = ref([]);
 const openAddCourse = ref(false);
 
 onMounted(async () => {
-    if (!homeStore.myCourses.length > 0) {
-        await loadListCourse();
-    } else {
-        listCourses.value = homeStore.myCourses;
-    }
+    await loadListCourse();
 });
 
 async function loadListCourse() {
